@@ -18,7 +18,7 @@ p = 1
 lbd = .01 # regularization parameter
 hardness = .94 # alignement between mu and M. 1 is unsolvable problem.
 err_const = .1 # multiplicative constant for the theoretical error
-kmax = 100 # order of smoothing
+kmax = 5 # order of smoothing
 
 #%%
 X = np.zeros((2*n, d))
@@ -91,3 +91,5 @@ plt.legend(fontsize=14)
 if save:
     plt.savefig('classif_MSE.pdf',
                 bbox_inches='tight', transparent=True)
+    
+
