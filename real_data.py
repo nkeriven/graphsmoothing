@@ -7,14 +7,18 @@ import dgl # for datasets. Can be anything, really
 
 plt.close('all')
 np.random.seed(0)
-save = False
+savefig = True
 
 #%%
 kmax = 500
 p = 200
 lbd = 1e-7 # regularization
 
-g = dgl.data.CoraGraphDataset()[0]
+dataset = 'citeseer' # 'citeseer' 
+if dataset =='cora':
+    g = dgl.data.CoraGraphDataset()[0]
+elif dataset == 'citeseer':
+    g = dgl.data.CiteseerGraphDataset()[0]
 A = g.adj(scipy_fmt='coo')
 
 #extract largest CC
@@ -38,7 +42,7 @@ X -= X.mean(axis=0)[None,:]
 
 # label
 Y = np.array(g.ndata['label'])[ind]
-Y = np.array(Y, dtype=np.float64) - Y.mean()
+Y = np.array(Y, dtype=np.float64) - Y.mean() # for display
 
 #%%
 
@@ -47,29 +51,33 @@ acc=[]
 th_acc = []
 for k in range(kmax):
 
+    if k==0 or k==10 or k==499:
+        plt.figure(figsize=(6,3))
+        ind = [i for i in range(n) if np.abs(Y[i])<1.5]
+        plt.scatter(WX[ind,0], WX[ind,1], c=Y[ind], s=15)
+        if dataset == 'cora':
+            plt.xlim([-.05,.06])
+            plt.ylim([-.1,.1])
+        elif dataset =='citeseer':
+            plt.xlim([-.04,.05])
+            plt.ylim([-.05,.05])
+        plt.xlabel('x0', fontsize=12)
+        plt.ylabel('x1', fontsize=12)
+        if savefig:
+            plt.savefig(f'{dataset}_data{k}.pdf',
+                        bbox_inches='tight', transparent=True)
+        
     beta = np.linalg.solve(WX.T @ WX/n + lbd*np.eye(p), WX.T @ Y/n)
     yhat = WX @ beta
     acc.append(np.linalg.norm(Y-yhat)**2/n)
 
     WX=W@WX
-    if k==0 or k==10 or k==499:
-        plt.figure(figsize=(6,3))
-        ind = [i for i in range(n) if np.abs(Y[i])<1.5]
-        plt.scatter(WX[ind,0], WX[ind,1], c=Y[ind], s=15)
-        plt.xlim([-.05,.06])
-        plt.ylim([-.1,.1])
-        plt.xlabel('x0', fontsize=12)
-        plt.ylabel('x1', fontsize=12)
-        if save:
-            plt.savefig(f'oversmoothing/fig/cora_data{k}.pdf',
-                        bbox_inches='tight', transparent=True)
 
 
 plt.figure(figsize=(6,3))
-plt.semilogx(np.arange(1, kmax+1), acc, label='Empirical', linewidth=3)
+plt.semilogx(np.arange(1, kmax+1), acc, linewidth=3)
 plt.xlabel('Order of smoothing', fontsize=16)
 plt.ylabel('MSE', fontsize=16)
-# plt.legend(fontsize=14)
-if save:
-    plt.savefig('oversmoothing/fig/cora_MSE.pdf',
+if savefig:
+    plt.savefig(f'{dataset}_MSE.pdf',
                 bbox_inches='tight', transparent=True)

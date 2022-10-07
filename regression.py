@@ -7,17 +7,24 @@ import scipy
 
 plt.close('all')
 np.random.seed(0)
-save=False
+savefig=False
 
 #%%
-n = 1000
+
 d = 2
 p = 1
 lbd = .001 # regularization parameter
 kmax = 10
 # eigenvalues
-lamb1 = 2
-lamb2 = .5
+
+if False: # switch to False for failure of beneficial smoothing
+    lamb1 = 2
+    lamb2 = .5
+    n = 1000
+else:
+    lamb1 = .5
+    lamb2 = 1
+    n = 3000
 
 X = np.random.randn(n, d)
 u1 = np.array([[1],[1]])/np.sqrt(2)
@@ -49,7 +56,7 @@ for k in range(kmax):
         plt.scatter(WX[:,0], WX[:,1], c=Y)
         plt.xlim([-2.5, 2.5])
         plt.ylim([-3.5, 3.5])
-        if save:
+        if savefig:
             plt.savefig(f'reg_latent_{k}.pdf',
                         bbox_inches='tight', transparent=True)
         plt.figure(figsize=(6,2.4))
@@ -58,7 +65,7 @@ for k in range(kmax):
         plt.xlim([-3, 3])
         plt.xlabel('z', fontsize=16)
         plt.ylabel('y', fontsize=16)
-        if save:
+        if savefig:
             plt.savefig(f'reg_features_{k}.pdf',
                         bbox_inches='tight', transparent=True)
 
@@ -77,6 +84,6 @@ plt.semilogx(np.arange(1, kmax+1), th_acc, label='Theory', linewidth=3)
 plt.xlabel('Order of smoothing', fontsize=12)
 plt.ylabel('MSE', fontsize=12)
 plt.legend(fontsize=14)
-if save:
+if savefig:
     plt.savefig('reg_MSE.pdf',
                 bbox_inches='tight', transparent=True)

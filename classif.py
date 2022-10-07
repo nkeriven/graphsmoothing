@@ -9,7 +9,7 @@ import seaborn as sns
 #%%
 plt.close('all')
 np.random.seed(0)
-save = False
+savefig = True
 
 #%%
 n = 2000
@@ -18,7 +18,7 @@ p = 1
 lbd = .01 # regularization parameter
 hardness = .94 # alignement between mu and M. 1 is unsolvable problem.
 err_const = .1 # multiplicative constant for the theoretical error
-kmax = 5 # order of smoothing
+kmax = 100 # order of smoothing
 
 #%%
 X = np.zeros((2*n, d))
@@ -64,7 +64,7 @@ for k in range(kmax):
         sns.kdeplot(x=WX[n:,0], y=WX[n:,1], fill=True, alpha=.8, levels=20, thresh=.02,)
         plt.xlim([-3, 3])
         plt.ylim([-4.5, 4.5])
-        if save:
+        if savefig:
             plt.savefig(f'classif_latent_{k}.pdf',
                         bbox_inches='tight', transparent=True)
 
@@ -72,7 +72,7 @@ for k in range(kmax):
         sns.kdeplot(data=WXM[:n].squeeze(), shade=True, legend=False, color='tab:blue', linewidth=2)
         sns.kdeplot(data=WXM[n:].squeeze(), shade=True, legend=False, color='tab:orange', linewidth=2)
         plt.xlim([-3, 3])
-        if save:
+        if savefig:
             plt.savefig(f'classif_features_{k}.pdf',
                         bbox_inches='tight', transparent=True)
 
@@ -88,7 +88,7 @@ plt.semilogx(np.arange(1, kmax+1), th_acc, label='Theory', linewidth=3)
 plt.xlabel('Order of smoothing', fontsize=12)
 plt.ylabel('MSE', fontsize=12)
 plt.legend(fontsize=14)
-if save:
+if savefig:
     plt.savefig('classif_MSE.pdf',
                 bbox_inches='tight', transparent=True)
     
